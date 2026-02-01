@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <main>
+        <div>
+            <div class="header">
+                <h1>Текстовая RPG игра</h1>
+            </div>
+            <div class="character-and-action">
+                <div class="characteristics">
+                    <div class="stats">Имя: Рыцарь</div>
+                    <div class="stats">Здоровье: 110</div>
+                    <div class="stats">Сила: 10</div>
+                    <div class="stats">Защита: 6</div>
+                    <div class="stats">Уровень: 1</div>
+                    <div class="stats">Инвентарь: <span id="backpack"></span></div>
+                </div>
+                <div class="actions">
+                    <button class="action" id="attack">Атаковать</button>
+                    <button class="action" id="block">Защищаться</button>
+                    <button class="action" id="inventory">Использовать инвентарь</button>
+                </div>
+            </div>
+            <div class="locations">
+                <div class="current-location" id="current-location">
+                    Текущая локация:
+                    <span id="last-location" class="tavern">Таверна</span>
+                    <!-- <span id = "village" class="hide">Деревня</span>
+                    <span id = "cave" class="hide">Пещера</span> -->
+                </div>
+                <div class="location">
+                    <button class="possible-location" id="go-village">Идти в деревню</button>
+                    <button class="possible-location" id="go-cave">Идти в пещеру</button>
+                    <button class="possible-location" id="go-back">Вернуться в предыдущую локацию</button>
+                </div>
+            </div>
+            <div class="event-log">
+                <div class="log" id="event-log">
+                    <p>Вы готовы к бою...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="./script.js"></script>
+</body>
+
+</html>
