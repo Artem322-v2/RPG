@@ -6,7 +6,7 @@ const player = {
     armor: 4,
     inventory: [
         {
-            Id: 'health-potion',
+            id: 'health-potion',
             name: 'Зелье лечения',
             type: 'potion',
             value: 20,
@@ -41,11 +41,11 @@ const locations = {
             armor: 2,
             expiriance: 10,
             reward: {
-                Id: 'fireBall',
+                id: 'fireBall',
                 name: 'Заклинание: Огенный шар',
                 type: 'spell',
                 value: 30,
-                description: 'Огенный шар попадает по врагу и наносит 30 урона',
+                description: 'Огненный шар попадает по врагу и наносит 30 урона',
             }
         },
 
@@ -105,13 +105,11 @@ function moveTo(location) {
         if (locationData.enemy) {
 
 
-            eventLog.innerHTML += `<p>${locationData.description}</p>`;
-            eventLog.scrollTop = eventLog.scrollHeight;
+            eventLogMessage(`${locationData.description}`);
 
         } else {
 
-            eventLog.innerHTML += `<p>${locationData.descriptionNotEnemy}</p>`;
-            eventLog.scrollTop = eventLog.scrollHeight;
+            eventLogMessage(`${locationData.descriptionNotEnemy}`);
 
         }
 
@@ -132,8 +130,7 @@ function goBack() {
 
         locationData = locations[currentLocation];
 
-        eventLog.innerHTML += `<p>Вы вернулись в ${locationData.name}</p>`;
-        eventLog.scrollTop = eventLog.scrollHeight;
+        eventLogMessage(`Вы вернулись в ${locationData.name}`);
 
         updateLocation();
 
@@ -182,38 +179,41 @@ const eventLog = document.getElementById('event-log');
 
 function attackEnemy(enemy) {
 
-    let damage = player.strength - enemy.armor;
-    enemy.health = enemy.health - damage;
+    if (enemy) {
 
-    if (enemy.health > 0) {
+        let damage = player.strength - enemy.armor;
+        enemy.health = enemy.health - damage;
 
-        eventLog.innerHTML += `<p>Вы аттаковали ${enemy.name}а и нанесли ${damage} урона. У ${enemy.name}а осталось ${enemy.health} здоровья</p>`;
-        eventLog.scrollTop = eventLog.scrollHeight;
+        if (enemy.health > 0) {
 
-        let heroDamage = enemy.strength - player.armor;
-        player.health = player.health - heroDamage;
-        checkIfDead();
+            eventLogMessage(`Вы атаковали ${enemy.name}а и нанесли ${damage} урона. У ${enemy.name}а осталось ${enemy.health} здоровья`);
 
-        eventLog.innerHTML += `<p>${enemy.name} атакует в ответ и наносит ${heroDamage} урона. У вас осталось ${player.health} здоровья</p>`;
-        eventLog.scrollTop = eventLog.scrollHeight;
+            let heroDamage = enemy.strength - player.armor;
+            player.health = player.health - heroDamage;
+            checkIfDead();
 
-    } else {
-
-        if (enemy.reward) {
-
-            player.inventory.push(enemy.reward);
-            delete locations[currentLocation].enemy;
-            displayInventory();
-            eventLog.innerHTML += `<p>Вы победили и заработали ${enemy.expiriance}</p>`;
-            eventLog.scrollTop = eventLog.scrollHeight;
+            eventLogMessage(`${enemy.name} атакует в ответ и наносит ${heroDamage} урона. У вас осталось ${player.health} здоровья`);
 
         } else {
-           
-            delete locations[currentLocation].enemy;
-            eventLog.innerHTML += `<p>Вы победили и заработали ${enemy.expiriance}</p>`;
-            eventLog.scrollTop = eventLog.scrollHeight;
 
+            if (enemy.reward) {
+
+                player.inventory.push(enemy.reward);
+                delete locations[currentLocation].enemy;
+                displayInventory();
+                eventLogMessage(`Вы победили и заработали ${enemy.expiriance} опыта`);
+
+
+            } else {
+
+                delete locations[currentLocation].enemy;
+                eventLogMessage(`Вы победили и заработали ${enemy.expiriance} опыта`);
+
+            }
         }
+    } else {
+
+        eventLogMessage(`Нет цели для атаки`);
     }
 
 }
@@ -232,18 +232,17 @@ function blockAttack(enemy) {
         let originalArmor = player.armor;
 
         player.armor = player.armor * 2;
-        eventLog.innerHTML += `<p>Вы приняли защитную стойку, Ваша броня увеличена и равна ${player.armor}</p>`;
-        eventLog.scrollTop = eventLog.scrollHeight;
+        eventLogMessage(`<p>Вы приняли защитную стойку, Ваша броня увеличена и равна ${player.armor}`);
+
 
         let heroDamage = enemy.strength - player.armor;
 
         if (heroDamage > 0) {
-         
+
             player.health = player.health - Math.ceil(heroDamage * 1.5);
             checkIfDead();
 
-            eventLog.innerHTML += `<p>${enemy.name} пробил защиту и нанес ${Math.ceil(heroDamage * 1.5)} критического урона. У вас осталось ${player.health} здоровья</p>`;
-            eventLog.scrollTop = eventLog.scrollHeight;
+            eventLogMessage(`${enemy.name} пробил защиту и нанес ${Math.ceil(heroDamage * 1.5)} критического урона. У вас осталось ${player.health} здоровья`);
 
         } else {
 
@@ -252,13 +251,25 @@ function blockAttack(enemy) {
 
             if (enemy.health > 0) {
 
-                eventLog.innerHTML += `<p>Защита успешна, Вы нанесли x2 урона. У врага осталось ${enemy.health} здоровья</p>`;
-                eventLog.scrollTop = eventLog.scrollHeight;
+                eventLogMessage(`Защита успешна, Вы нанесли x2 урона. У врага осталось ${enemy.health} здоровья`);
+
 
             } else {
 
-                eventLog.innerHTML += `<p>Вы победили и заработали ${enemy.expiriance}</p>`;
-                eventLog.scrollTop = eventLog.scrollHeight;
+                if (enemy.reward) {
+
+                    player.inventory.push(enemy.reward);
+                    delete locations[currentLocation].enemy;
+                    displayInventory();
+                    eventLogMessage(`Вы победили и заработали ${enemy.expiriance} опыта`);
+
+
+                } else {
+
+                    delete locations[currentLocation].enemy;
+                    eventLogMessage(`Вы победили и заработали ${enemy.expiriance} опыта`);
+
+                }
 
             }
 
@@ -364,8 +375,10 @@ function useInventoryItem(itemIndex) {
             break;
     }
 
-    player.inventory.splice(itemIndex, 1);
-    displayInventory();
+    if (locationData.enemy) {
+        player.inventory.splice(itemIndex, 1);
+        displayInventory();
+    }
 }
 
 function usePotion(potion) {
@@ -375,18 +388,25 @@ function usePotion(potion) {
 
     const heal = player.health - oldHealth;
 
-    eventLog.innerHTML += `<p>Вы использовали ${potion.name} и восстановили ${heal} здоровья. Теперь у Вас ${player.health} здоровья</p>`;
-    eventLog.scrollTop = eventLog.scrollHeight;
+    eventLogMessage(`Вы использовали ${potion.name} и восстановили ${heal} здоровья. Теперь у Вас ${player.health} здоровья`);
 
 }
 
 function useFireBall(spell) {
-    // if (enemy) {
-    locationData.enemy.health = Math.max(locationData.enemy.health - 30, 0);
-    eventLog.innerHTML += `<p>Вы использовали ${spell.name} и нанесли врагу 30 урона. Теперь у врага ${locationData.enemy.name, locationData.enemy.health} здоровья</p>`;
-    eventLog.scrollTop = eventLog.scrollHeight;
 
-    // }
+    if (locationData.enemy) {
+        locationData.enemy.health = Math.max(locationData.enemy.health - 30, 0);
+        eventLogMessage(`Вы использовали ${spell.name} и нанесли врагу 30 урона. Теперь у врага ${locationData.enemy.health} здоровья`);
+
+    } else {
+        eventLogMessage(`Нет цели для атаки`);
+    }
+}
+
+function eventLogMessage(message) {
+
+    eventLog.innerHTML += `<p>${message}</p>`;
+    eventLog.scrollTop = eventLog.scrollHeight;
 }
 
 displayInventory();
